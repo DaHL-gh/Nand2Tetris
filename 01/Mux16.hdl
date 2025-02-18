@@ -1,0 +1,83 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux16.hdl
+
+/**
+ * 16-bit multiplexor: 
+ * for i = 0..15 out[i] = a[i] if sel == 0 
+ *                        b[i] if sel == 1
+ */
+
+
+CHIP Mux16 {
+    IN a[16], b[16], sel;
+    OUT out[16];
+
+    PARTS:
+		Not(in=sel, out=NOTsel);
+
+		Nand(a=a[0], b=NOTsel, out=aNandnotsel0);
+		Nand(a=sel, b=b[0], out=bNandsel0);
+		Nand(a=aNandnotsel0, b=bNandsel0, out=out[0]);
+
+		Nand(a=a[1], b=NOTsel, out=aNandnotsel1);
+		Nand(a=sel, b=b[1], out=bNandsel1);
+		Nand(a=aNandnotsel1, b=bNandsel1, out=out[1]);
+
+		Nand(a=a[2], b=NOTsel, out=aNandnotsel2);
+		Nand(a=sel, b=b[2], out=bNandsel2);
+		Nand(a=aNandnotsel2, b=bNandsel2, out=out[2]);
+
+		Nand(a=a[3], b=NOTsel, out=aNandnotsel3);
+		Nand(a=sel, b=b[3], out=bNandsel3);
+		Nand(a=aNandnotsel3, b=bNandsel3, out=out[3]);
+
+		Nand(a=a[4], b=NOTsel, out=aNandnotsel4);
+		Nand(a=sel, b=b[4], out=bNandsel4);
+		Nand(a=aNandnotsel4, b=bNandsel4, out=out[4]);
+
+		Nand(a=a[5], b=NOTsel, out=aNandnotsel5);
+		Nand(a=sel, b=b[5], out=bNandsel5);
+		Nand(a=aNandnotsel5, b=bNandsel5, out=out[5]);
+
+		Nand(a=a[6], b=NOTsel, out=aNandnotsel6);
+		Nand(a=sel, b=b[6], out=bNandsel6);
+		Nand(a=aNandnotsel6, b=bNandsel6, out=out[6]);
+
+		Nand(a=a[7], b=NOTsel, out=aNandnotsel7);
+		Nand(a=sel, b=b[7], out=bNandsel7);
+		Nand(a=aNandnotsel7, b=bNandsel7, out=out[7]);
+
+		Nand(a=a[8], b=NOTsel, out=aNandnotsel8);
+		Nand(a=sel, b=b[8], out=bNandsel8);
+		Nand(a=aNandnotsel8, b=bNandsel8, out=out[8]);
+
+		Nand(a=a[9], b=NOTsel, out=aNandnotsel9);
+		Nand(a=sel, b=b[9], out=bNandsel9);
+		Nand(a=aNandnotsel9, b=bNandsel9, out=out[9]);
+
+		Nand(a=a[10], b=NOTsel, out=aNandnotsel10);
+		Nand(a=sel, b=b[10], out=bNandsel10);
+		Nand(a=aNandnotsel10, b=bNandsel10, out=out[10]);
+
+		Nand(a=a[11], b=NOTsel, out=aNandnotsel11);
+		Nand(a=sel, b=b[11], out=bNandsel11);
+		Nand(a=aNandnotsel11, b=bNandsel11, out=out[11]);
+
+		Nand(a=a[12], b=NOTsel, out=aNandnotsel12);
+		Nand(a=sel, b=b[12], out=bNandsel12);
+		Nand(a=aNandnotsel12, b=bNandsel12, out=out[12]);
+
+		Nand(a=a[13], b=NOTsel, out=aNandnotsel13);
+		Nand(a=sel, b=b[13], out=bNandsel13);
+		Nand(a=aNandnotsel13, b=bNandsel13, out=out[13]);
+
+		Nand(a=a[14], b=NOTsel, out=aNandnotsel14);
+		Nand(a=sel, b=b[14], out=bNandsel14);
+		Nand(a=aNandnotsel14, b=bNandsel14, out=out[14]);
+
+		Nand(a=a[15], b=NOTsel, out=aNandnotsel15);
+		Nand(a=sel, b=b[15], out=bNandsel15);
+		Nand(a=aNandnotsel15, b=bNandsel15, out=out[15]);
+}

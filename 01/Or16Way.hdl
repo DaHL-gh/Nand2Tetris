@@ -1,0 +1,26 @@
+/**
+ * 16-way Or gate: out = in[0] or in[1] or ... or in[15].
+ */
+
+CHIP Or16Way {
+
+    IN  in[16];
+    OUT out;
+
+    PARTS:
+		Or(a=in[0], b=in[1], out=or01);
+		Or(a=or01, b=in[2], out=or02);
+		Or(a=or02, b=in[3], out=or03);
+		Or(a=or03, b=in[4], out=or04);
+		Or(a=or04, b=in[5], out=or05);
+		Or(a=or05, b=in[6], out=or06);
+		Or(a=or06, b=in[7], out=or07);
+		Or(a=or07, b=in[8], out=or08);
+		Or(a=or08, b=in[9], out=or09);
+		Or(a=or09, b=in[10], out=or010);
+		Or(a=or010, b=in[11], out=or011);
+		Or(a=or011, b=in[12], out=or012);
+		Or(a=or012, b=in[13], out=or013);
+		Or(a=or013, b=in[14], out=or014);
+		Or(a=or014, b=in[15], out=out);
+}

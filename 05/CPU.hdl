@@ -1,0 +1,81 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/05/CPU.hdl
+
+/**
+ * The Hack CPU (Central Processing unit), consisting of an ALU,
+ * two registers named A and D, and a program counter named PC.
+ * The CPU is designed to fetch and execute instructions written in 
+ * the Hack machine language. In particular, functions as follows:
+ * Executes the inputted instruction according to the Hack machine 
+ * language specification. The D and A in the language specification
+ * refer to CPU-resident registers, while M refers to the external
+ * memory location addressed by A, i.e. to Memory[A]. The inM input 
+ * holds the value of this location. If the current instruction needs 
+ * to write a value to M, the value is placed in outM, the address 
+ * of the target location is placed in the addressM output, and the 
+ * writeM control bit is asserted. (When writeM==0, any value may 
+ * appear in outM). The outM and writeM outputs are combinational: 
+ * they are affected instantaneously by the execution of the current 
+ * instruction. The addressM and pc outputs are clocked: although they 
+ * are affected by the execution of the current instruction, they commit 
+ * to their new values only in the next time step. If reset==1 then the 
+ * CPU jumps to address 0 (i.e. pc is set to 0 in next time step) rather 
+ * than to the address resulting from executing the current instruction. 
+ */
+
+CHIP CPU {
+	IN  inM[16],         // Memory input (M = RAM[A])
+	instruction[16], // Current instruction
+	reset;           // Reset signal (1 = restart, 0 = continue execution)
+
+	OUT outM[16],        // ALU output to memory
+			writeM,          // Write enable for memory
+			addressM[15],    // Address for memory access
+			pc[15];          // Program counter output
+
+	PARTS:
+		// Instruction Type Decoding
+		Not(in=instruction[15], out=isAInstruction);
+		Not(in=isAInstruction, out=isCInstruction);
+
+		// Decode Control Bits from C-instruction
+		Mux16(a=false, b=instruction, sel=isCInstruction, 
+				out[12]=AorM, out[11]=zx, out[10]=nx, out[9]=zy, out[8]=ny, 
+				out[7]=f, out[6]=no, out[5]=writeA, out[4]=writeD, out[3]=writeM, 
+				out[2]=jmp2, out[1]=jmp1, out[0]=jmp0);
+
+		// A Register (Stores address or computation result)
+		Mux16(a=instruction, b=ALUout, sel=isCInstruction, out=aInput);
+		Or(a=writeA, b=isAInstruction, out=loadA);
+		ARegister(in=aInput, load=loadA, out=aValue, out[0..14]=addressM);
+
+		// D Register (General-purpose storage)
+		DRegister(in=ALUout, load=writeD, out=dValue);
+
+		// ALU Computation
+		Mux16(a=aValue, b=inM, sel=AorM, out=aORmValue);
+		ALU(x=dValue, y=aORmValue, 
+				zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, 
+				zr=JEQ, ng=JLT, out=ALUout, out=outM);
+
+		// Jump Logic
+		Not(in=JLT, out=JGE);
+		Not(in=JEQ, out=JNE);
+		And(a=JNE, b=JGE, out=JGT);
+		Not(in=JGT, out=JLE);
+
+		// Jump Control Mult8Way
+		Mux(a=false, b=JGT, sel=jmp0, out=jmpGT);
+		Mux(a=JEQ, b=JGE, sel=jmp0, out=jmpGE);
+		Mux(a=JLT, b=JNE, sel=jmp0, out=jmpNE);
+		Mux(a=JLE, b=true, sel=jmp0, out=jmpAlways);
+
+		Mux(a=jmpGT, b=jmpGE, sel=jmp1, out=jmp01);
+		Mux(a=jmpNE, b=jmpAlways, sel=jmp1, out=jmp23);
+		Mux(a=jmp01, b=jmp23, sel=jmp2, out=loadPC);
+
+		// Program Counter (PC)
+		PC(in=aValue, load=loadPC, inc=true, reset=reset, out[0..14]=pc);
+}
