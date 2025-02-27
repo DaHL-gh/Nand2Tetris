@@ -47,6 +47,7 @@ public class StackTests
     {
         var program = $"push constant {value}|pop {segment} {indexInSegment}".Split("|");
         var emulator = program.LoadVmCodeToEmulator(withMemoryInit: true).EmulateTicks(100);
+				Console.WriteLine("@LCL:" + emulator.Ram[1]);
         Assert.That(emulator.Ram[expectedDestinationAddress], Is.EqualTo(value));
     }
 

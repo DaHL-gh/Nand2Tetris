@@ -37,13 +37,22 @@ public partial class CodeWriter
     // Транслирует все строки кода внутри модуля moduleName.
     public void WriteModule(string moduleName, string[] vmLines)
     {
-        // Используйте Parser, и WriteInstruction
+			Parser parser = new Parser();
+			VmInstruction[] instructions = parser.Parse(vmLines);
+
+			foreach (VmInstruction instruction in instructions) {
+				WriteInstruction(moduleName: moduleName, instruction: instruction);
+			}
     }
 
     // Транслирует код для виртуальной машины из файла filename.
     public void WriteModuleFromFile(string filename)
     {
-        // Используйте WriteModule
+			string[] lines = File.ReadAllLines(filename);
+			
+			string moduleName = Path.GetFileNameWithoutExtension(filename);
+
+			WriteModule(moduleName: moduleName, vmLines: lines);
     }
 
     /// <summary>

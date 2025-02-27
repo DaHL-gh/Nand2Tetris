@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using System.Linq;
+using System;
 
 namespace VMTranslator.Tests;
 
@@ -22,8 +23,14 @@ public class FunctionCallTests
     [TestCase("function.with.long.name", 5)]
     public void Call(string funcName, int argsCount)
     {
+				CodeWriter x = new CodeWriter(new List<string>{});
+				x.WriteModuleFromFile("../../../test.vm");
+				foreach (string line in x.ResultAsmCode)
+				{
+					Console.WriteLine(line);
+				}
         var program = $"call {funcName} {argsCount}|function {funcName} 0";
-        var emulator = program.Split("|").LoadVmCodeToEmulator(withMemoryInit:true).EmulateTicks(100);
+        var emulator = program.Split("|").LoadVmCodeToEmulator(withMemoryInit: true).EmulateTicks(100);
         var ram = emulator.Ram;
         var sp = ram[0];
         var lcl = ram[1];
@@ -51,7 +58,7 @@ public class FunctionCallTests
         Assert.That(sp, Is.EqualTo(VmInitialization.Sp + localVariablesCount)); // stack pointer
         for (int i = 0; i < localVariablesCount; i++)
         {
-            Assert.That(ram[sp-1-i], Is.EqualTo(0)); // default 0
+            Assert.That(ram[sp - 1 - i], Is.EqualTo(0)); // default 0
         }
     }
 
@@ -68,7 +75,7 @@ public class FunctionCallTests
 
         // Stack contains single element — function result
         Assert.That(sp, Is.EqualTo(VmInitialization.Sp + 1)); // stack pointer
-        Assert.That(ram[sp-1], Is.EqualTo(42));
+        Assert.That(ram[sp - 1], Is.EqualTo(42));
 
         // segments are restored to initial values
         Assert.That(ram[1], Is.EqualTo(VmInitialization.Local));
@@ -80,6 +87,7 @@ public class FunctionCallTests
     [Test]
     public void ReturnWithNestedCalls()
     {
+
         var program = "push constant 1 | call f 1 | goto END | function f 0 | push constant 2 | call g 1 | return | function g 0 | push constant 3 | return | label END";
         var emulator = program.Split("|").LoadVmCodeToEmulator().EmulateTicks(int.MaxValue);
         var ram = emulator.Ram;

@@ -1,0 +1,107 @@
+function Math.init 0
+push constant 0
+return
+function Math.abs 0
+push argument 0
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 0
+return
+goto IF_END0
+label IF_FALSE0
+push argument 0
+neg
+return
+label IF_END0
+function Math.multiply 3
+push constant 0
+pop local 0
+push argument 0
+pop local 1
+push constant 0
+pop local 2
+label WHILE_EXP0
+push local 2
+push constant 16
+lt
+not
+if-goto WHILE_END0
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Math.bit 1
+push constant 2
+push argument 1
+call Math.power 2
+pop local 0
+push argument 0
+push local 0
+and
+push constant 0
+gt
+return
+function Math.power 2
+push constant 1
+pop local 0
+push constant 0
+pop local 1
+label WHILE_EXP0
+push local 1
+push argument 1
+lt
+not
+if-goto WHILE_END0
+push local 0
+push argument 0
+call Math.multiply 2
+pop local 0
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push local 0
+return
+function Math.divide 0
+push constant 0
+return
+function Math.sqrt 0
+push constant 0
+return
+function Math.max 0
+push argument 0
+push argument 1
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 0
+return
+goto IF_END0
+label IF_FALSE0
+push argument 1
+return
+label IF_END0
+function Math.min 0
+push argument 0
+push argument 1
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 1
+return
+goto IF_END0
+label IF_FALSE0
+push argument 0
+return
+label IF_END0

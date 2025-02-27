@@ -155,3 +155,4 @@
 /run/mount/HDD/Nand2Tetris/07/obj/Debug/net6.0/VMTranslator.pdb
 /run/mount/HDD/Nand2Tetris/07/obj/Debug/net6.0/VMTranslator.genruntimeconfig.cache
 /run/mount/HDD/Nand2Tetris/07/obj/Debug/net6.0/ref/VMTranslator.dll
+/run/mount/HDD/Nand2Tetris/07/obj/Debug/net6.0/VMTranslator.sourcelink.json
