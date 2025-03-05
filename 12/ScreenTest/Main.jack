@@ -18,7 +18,6 @@ class Main {
 			let dy = dy + 1;		
 		}        
 		
-		return;
 
 		do Output.moveCursor(4, 4);
 		do Output.printString("dx > 0");

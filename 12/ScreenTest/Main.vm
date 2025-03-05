@@ -135,8 +135,6 @@ add
 pop local 1
 goto WHILE_EXP0
 label WHILE_END0
-push constant 0
-return
 push constant 4
 push constant 4
 call Output.moveCursor 2

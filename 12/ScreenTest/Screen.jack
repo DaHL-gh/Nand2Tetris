@@ -68,25 +68,53 @@ class Screen {
 
 	/** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
 	function void drawLine(int x1, int y1, int x2, int y2) {
-		var int x, y, dx, dy, diff, m_new;
-		var boolean negX, negY;
+		var int x, y, dx, dy, diff, c_x, c_y;
+		var boolean negX, negY, YgtX;
 
-		let dx = x2 - x1;
-		let dy = y2 - y1;
+		let dx = Math.abs(x2 - x1);
+		let dy = Math.abs(y2 - y1);
 
-		let x = x1;
-		let y = y1;
-		let diff = 0;
-		while (x < x2) {
+		let negX = x1 > x2;
+		let negY = y1 < y2;
 
-			if (diff > 0) {
+		if (dy > dx) {
+			let YgtX = true;
+			let dx = dx + dy; // swap dx dy
+			let dy = dx - dy;
+			let dx = dx - dy;
+		} else { 
+			let YgtX = false; 
+		}
+
+		do Screen.drawPixel(x1, y1);
+		let x = 1;
+		let y = 0;
+
+		let c_x = dy * 2;
+		let c_y = dx * 2;
+		let diff = dx - c_x;
+		while (x < (dx + 1)) {
+
+			if (~(diff > 0)) {
+				let diff = diff + c_y;
 				let y = y + 1;
-				let diff = diff - dx - dx;
 			}
-			let diff = diff + dy + dy;
 
-			do Screen.drawPixel(x, y);
+			if (YgtX) {
+				if (negX) {
+					do Screen.drawPixel(x1 - y,  y1 + x);
+				} else {
+					do Screen.drawPixel(x1 + y,  y1 + x);
+				}
+			} else {
+				if (negX) {
+					do Screen.drawPixel(x1 - x,  y1 + y);
+				} else {
+					do Screen.drawPixel(x1 + x,  y1 + y);
+				}
+			}
 			
+			let diff = diff - c_x;
 			let x = x + 1;
 		}
 		return;

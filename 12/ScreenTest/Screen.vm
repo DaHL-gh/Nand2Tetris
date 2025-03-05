@@ -123,54 +123,152 @@ pop that 0
 label IF_END1
 push constant 0
 return
-function Screen.drawLine 8
+function Screen.drawLine 10
 push argument 2
 push argument 0
 sub
+call Math.abs 1
 pop local 2
 push argument 3
 push argument 1
 sub
+call Math.abs 1
 pop local 3
 push argument 0
-pop local 0
+push argument 2
+gt
+pop local 7
 push argument 1
-pop local 1
+push argument 3
+lt
+pop local 8
+push local 3
+push local 2
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
 push constant 0
+not
+pop local 9
+push local 2
+push local 3
+add
+pop local 2
+push local 2
+push local 3
+sub
+pop local 3
+push local 2
+push local 3
+sub
+pop local 2
+goto IF_END0
+label IF_FALSE0
+push constant 0
+pop local 9
+label IF_END0
+push argument 0
+push argument 1
+call Screen.drawPixel 2
+pop temp 0
+push constant 1
+pop local 0
+push constant 0
+pop local 1
+push local 3
+push constant 2
+call Math.multiply 2
+pop local 5
+push local 2
+push constant 2
+call Math.multiply 2
+pop local 6
+push local 2
+push local 5
+sub
 pop local 4
 label WHILE_EXP0
 push local 0
-push argument 2
+push local 2
+push constant 1
+add
 lt
 not
 if-goto WHILE_END0
 push local 4
 push constant 0
 gt
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
+not
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 4
+push local 6
+add
+pop local 4
 push local 1
 push constant 1
 add
 pop local 1
-push local 4
-push local 2
-sub
-push local 2
-sub
-pop local 4
-label IF_FALSE0
-push local 4
-push local 3
-add
-push local 3
-add
-pop local 4
-push local 0
+label IF_FALSE1
+push local 9
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 7
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push argument 0
 push local 1
+sub
+push argument 1
+push local 0
+add
 call Screen.drawPixel 2
 pop temp 0
+goto IF_END3
+label IF_FALSE3
+push argument 0
+push local 1
+add
+push argument 1
+push local 0
+add
+call Screen.drawPixel 2
+pop temp 0
+label IF_END3
+goto IF_END2
+label IF_FALSE2
+push local 7
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push argument 0
+push local 0
+sub
+push argument 1
+push local 1
+add
+call Screen.drawPixel 2
+pop temp 0
+goto IF_END4
+label IF_FALSE4
+push argument 0
+push local 0
+add
+push argument 1
+push local 1
+add
+call Screen.drawPixel 2
+pop temp 0
+label IF_END4
+label IF_END2
+push local 4
+push local 5
+sub
+pop local 4
 push local 0
 push constant 1
 add
