@@ -8,18 +8,24 @@ push argument 0
 pop this 2
 push argument 0
 push constant 0
-eq
+gt
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
 push argument 0
-push constant 1
-add
-pop argument 0
-label IF_FALSE0
-push argument 0
 call Array.new 1
 pop this 0
+label IF_FALSE0
+push argument 0
+push constant 0
+lt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 14
+call Sys.error 1
+pop temp 0
+label IF_FALSE1
 push pointer 0
 return
 function String.dispose 0
@@ -38,15 +44,43 @@ return
 function String.charAt 0
 push argument 0
 pop pointer 0
+push constant 0
+push argument 1
+gt
+not
+push argument 1
+push this 1
+lt
+and
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
 push argument 1
 push this 0
 add
 pop pointer 1
 push that 0
 return
+label IF_FALSE0
+push constant 15
+call Sys.error 1
+pop temp 0
+push constant 0
+return
 function String.setCharAt 0
 push argument 0
 pop pointer 0
+push constant 0
+push argument 1
+gt
+not
+push argument 1
+push this 1
+lt
+and
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
 push argument 1
 push this 0
 add
@@ -57,9 +91,25 @@ push temp 0
 pop that 0
 push constant 0
 return
+label IF_FALSE0
+push constant 16
+call Sys.error 1
+pop temp 0
+push constant 0
+return
 function String.appendChar 0
 push argument 0
 pop pointer 0
+push this 1
+push this 2
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 17
+call Sys.error 1
+pop temp 0
+label IF_FALSE0
 push this 1
 push this 0
 add
@@ -77,6 +127,16 @@ return
 function String.eraseLastChar 0
 push argument 0
 pop pointer 0
+push this 1
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 18
+call Sys.error 1
+pop temp 0
+label IF_FALSE0
 push this 1
 push constant 1
 sub
@@ -170,21 +230,33 @@ push constant 0
 pop this 1
 push argument 1
 push constant 32767
+not
 eq
-push constant 1
-add
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
 push pointer 0
-push constant 3276
-neg
-call String.setInt 2
+push constant 45
+call String.appendChar 2
 pop temp 0
 push pointer 0
-push constant 48
-push constant 8
-add
+push constant 51
+call String.appendChar 2
+pop temp 0
+push pointer 0
+push constant 50
+call String.appendChar 2
+pop temp 0
+push pointer 0
+push constant 55
+call String.appendChar 2
+pop temp 0
+push pointer 0
+push constant 54
+call String.appendChar 2
+pop temp 0
+push pointer 0
+push constant 56
 call String.appendChar 2
 pop temp 0
 push constant 0

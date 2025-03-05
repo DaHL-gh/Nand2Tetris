@@ -19,10 +19,11 @@ class String {
 	constructor String new(int maxLength) {
 		let len = 0;
 		let maxLen = maxLength;
-		if (maxLength = 0) {
-			let maxLength = maxLength + 1;
+		if (maxLength > 0) {
+			let string = Array.new(maxLength);
 		}
-		let string = Array.new(maxLength);
+		
+		if (maxLength < 0) { do Sys.error(14); }
 
 		return this;
 	}
@@ -40,17 +41,27 @@ class String {
 
 	/** Returns the character at the j-th location of this string. */
 	method char charAt(int j) {
-		return string[j];
+		if (~(0 > j) & (j < len)) {
+			return string[j];
+		} 
+		do Sys.error(15);
+		return 0;
 	}
 
 	/** Sets the character at the j-th location of this string to c. */
 	method void setCharAt(int j, char c) {
-		let string[j] = c;
+		if (~(0 > j) & (j < len)) {
+			let string[j] = c;
+			return;
+		} 
+		do Sys.error(16);
 		return;
 	}
 
 	/** Appends c to this string's end and returns this string. */
 	method String appendChar(char c) {
+		if (len = maxLen) { do Sys.error(17); }
+
 		let string[len] = c;
 		let len = len + 1;
 
@@ -59,6 +70,8 @@ class String {
 
 	/** Erases the last character from this string. */
 	method void eraseLastChar() {
+		if (len = 0) { do Sys.error(18); }
+
 		let len = len - 1;
 		return;
 	}
@@ -94,9 +107,13 @@ class String {
 	method void setInt(int val) {
 		let len = 0;
 
-		if (val = 32767 + 1) {
-			do setInt(-3276);
-			do appendChar(48 + 8);
+		if (val = ~32767) {
+			do appendChar(45);
+			do appendChar(51);
+			do appendChar(50);
+			do appendChar(55);
+			do appendChar(54);
+			do appendChar(56);
 			return;
 		}
 
