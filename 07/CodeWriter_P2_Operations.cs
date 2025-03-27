@@ -32,6 +32,12 @@ public partial class CodeWriter
             case "neg":
                 WriteAsm("@SP", "A=M-1", "M=-M");
                 break;
+            case "inc":
+                WriteAsm("@SP", "A=M-1", "M=M+1");
+                break;
+            case "dec":
+                WriteAsm("@SP", "A=M-1", "M=M-1");
+                break;
             default: return false;
         }
         return true;

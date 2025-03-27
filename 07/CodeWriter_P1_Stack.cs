@@ -54,7 +54,7 @@ public partial class CodeWriter
         switch (segment)
         {
             case "constant":
-                WriteAsm("@" + index, "D=A");
+								PushConstant(segment, index);
                 break;
             case "local":
             case "argument":
@@ -79,6 +79,22 @@ public partial class CodeWriter
         return true;
     }
 
+    private void PushConstant(string segment, string index)
+    {
+        if (index == "-32768")
+        {
+            WriteAsm("@" + "32767", "D=-A", "D=D-1");
+        }
+        else if (index[0] == '-')
+        {
+            WriteAsm("@" + index.Substring(1), "D=-A");
+        }
+        else
+        {
+            WriteAsm("@" + index, "D=A");
+        }
+    }
+
     private void PushFromSegment(string segment, string index)
     {
         string address = segmentAddresses[segment];
@@ -94,23 +110,22 @@ public partial class CodeWriter
             case "this":
             case "that":
                 PopToSegment(segment, index);
-                break;
+								return true;
             case "pointer":
                 WritePopToD();
                 string thisOrThat = index == "0" ? "THIS" : "THAT";
                 WriteAsm(new[] { "@" + thisOrThat, "M=D" });
-                break;
+								return true;
             case "temp":
                 WritePopToD();
                 WriteAsm(new[] { $"@{5 + int.Parse(index)}", "M=D" });
-                break;
+								return true;
             case "static":
                 WritePopToD();
                 WriteAsm(new[] { $"@{moduleName}.{index}", "M=D" });
-                break;
+								return true;
             default: return false;
         }
-        return true;
     }
 
     private void PopToSegment(string segment, string index)

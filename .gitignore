@@ -1,0 +1,8 @@
+# dotfiles
+.*
+!.gitignore
+
+# dotnet binaries
+**/bin/
+**/obj/
+!tools/bin/
