@@ -20,13 +20,20 @@ public partial class CodeWriter
         string name = instruction.Name;
 
         string functionName;
+        int nArgs;
         switch (name)
         {
             case "call":
                 functionName = instruction.Args[0];
-                int nArgs = int.Parse(instruction.Args[1]);
+                nArgs = int.Parse(instruction.Args[1]);
 
                 WriteFunctionCall(functionName, nArgs);
+                break;
+            case "tailrec":
+                functionName = instruction.Args[0];
+                nArgs = int.Parse(instruction.Args[1]);
+
+                WriteTailrec(functionName, nArgs);
                 break;
             case "function":
                 functionName = instruction.Args[0];
@@ -47,15 +54,19 @@ public partial class CodeWriter
         string returnLabel = GenerateUniqueReturnLabel(functionName);
         WriteAsm("@" + returnLabel, "D=A");
         WritePushD();
+        // saving old frame
         foreach (string label in new[] { "@LCL", "@ARG", "@THIS", "@THAT" })
         {
             WriteAsm(label, "D=M");
             WritePushD();
         }
 
+        // calculating arg pointer
         WriteAsm($"@{5 + nArgs}", "D=A", "@SP", "D=M-D", "@ARG", "M=D");
+        // LCL = SP
         WriteAsm("@SP", "D=M", "@LCL", "M=D");
 
+        // go to function
         WriteAsm("@" + functionName, "0;JMP");
         WriteAsm($"({returnLabel})");
     }
@@ -90,6 +101,23 @@ public partial class CodeWriter
 
         // jump to return
         WriteAsm("@13", "A=M", "0;JMP");
+    }
+
+    private void WriteTailrec(string functionName, int nArgs)
+    {
+        // ARG += nArgs
+        WriteAsm($"@{nArgs}", "D=A", "@ARG", "M=M+D");
+        for (int i = 0; i < nArgs; i++)
+        {
+            WritePopToD();
+            WriteAsm("@ARG", "A=M", "M=D");
+            WriteAsm("@ARG", "M=M-1");
+        }
+
+        // SP = LCL
+        WriteAsm("@LCL", "D=M", "@SP", "M=D");
+
+        WriteAsm("@" + functionName, "0;JMP");
     }
 
     private int callCount = 0;
