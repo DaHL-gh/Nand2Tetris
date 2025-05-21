@@ -48,22 +48,27 @@ namespace JackCompiling
 
         private Token ReadClassMembers(List<ClassVarDecSyntax> classVars, List<SubroutineDecSyntax> subroutineDecs)
         {
-            while (true) {
+            while (true)
+            {
                 Token token = tokenizer.Read();
 
-                if (token.Value == "}") {
+                if (token.Value == "}")
+                {
                     return token;
                 }
 
-                if (classVarKeywords.Contains(token.Value)) {
+                if (classVarKeywords.Contains(token.Value))
+                {
                     tokenizer.PushBack(token);
                     classVars.Add(ReadClassVarDec());
                 }
-                else if (subroutineDecKeyword.Contains(token.Value)) {
+                else if (subroutineDecKeyword.Contains(token.Value))
+                {
                     tokenizer.PushBack(token);
                     subroutineDecs.Add(ReadSubroutineDecSyntax());
                 }
-                else {
+                else
+                {
                     throw new ExpectedException("Expected class variable declaration or subroutine declaration", token);
                 }
             }
@@ -119,18 +124,22 @@ namespace JackCompiling
             Token close;
             List<VarDecSyntax> varDecs = new List<VarDecSyntax>();
             List<StatementSyntax> statementsList = new List<StatementSyntax>();
-            while (true) {
+            while (true)
+            {
                 Token token = tokenizer.Read();
 
-                if (token.Value == "}") {
+                if (token.Value == "}")
+                {
                     close = token;
                     break;
                 }
-                else if (token.Value == "var") {
+                else if (token.Value == "var")
+                {
                     tokenizer.PushBack(token);
                     varDecs.Add(ReadVarDec());
                 }
-                else if (statementKeywords.Contains(token.Value)) {
+                else if (statementKeywords.Contains(token.Value))
+                {
                     tokenizer.PushBack(token);
                     statementsList.Add(ReadStatement());
                 }
@@ -161,7 +170,7 @@ namespace JackCompiling
         {
             IReadOnlyList<StatementSyntax> statements = tokenizer.ReadList((token) =>
                     {
-                        if (statementKeywords.Contains(token.Value))
+                        if (token.Value != "}")
                         {
                             tokenizer.PushBack(token);
                             return ReadStatement();
@@ -174,26 +183,55 @@ namespace JackCompiling
 
         private StatementSyntax ReadStatement()
         {
-            Token statementStart = tokenizer.Read(TokenType.Keyword);
+            Token statementStart = tokenizer.Read();
             tokenizer.PushBack(statementStart);
 
-            if (statementStart.Value == "let")
-                return ReadLetStatement();
-            else if (statementStart.Value == "if")
-                return ReadIfStatement();
-            else if (statementStart.Value == "while")
-                return ReadWhileStatement();
-            else if (statementStart.Value == "do")
-                return ReadDoStatement();
-            else if (statementStart.Value == "return")
-                return ReadReturnStatement();
-            else
-                throw new ExpectedException("Expected statement keyword", statementStart);
+            if (IsStartOfLet(statementStart)) return ReadLetStatement();
+            if (IsStartOfDo(statementStart)) return ReadDoStatement();
+            if (statementStart.Value == "if") return ReadIfStatement();
+            if (statementStart.Value == "while") return ReadWhileStatement();
+            if (statementStart.Value == "return") return ReadReturnStatement();
+
+            throw new ExpectedException("Expected statement keyword", statementStart);
+        }
+
+        private bool IsStartOfLet(Token token)
+        {
+            if (token.Value == "let") return true;
+            if (token.TokenType == TokenType.Identifier)
+            {
+                var a = tokenizer.TryReadNext();
+                var b = tokenizer.TryReadNext();
+                if (b != null) tokenizer.PushBack(b);
+                if (a != null) tokenizer.PushBack(a);
+                return b?.Value == "=" || b?.Value == "[";
+            }
+            return false;
+        }
+
+        private bool IsStartOfDo(Token token)
+        {
+            if (token.Value == "do") return true;
+            if (token.TokenType == TokenType.Identifier)
+            {
+                var a = tokenizer.TryReadNext();
+                var b = tokenizer.TryReadNext();
+                if (b != null) tokenizer.PushBack(b);
+                if (a != null) tokenizer.PushBack(a);
+                return b?.Value == "(" || b?.Value == ".";
+            }
+            return false;
         }
 
         private LetStatementSyntax ReadLetStatement()
         {
-            Token let = tokenizer.Read("let");
+            Token let = tokenizer.Read();
+            if (let.Value != "let")
+            {
+                tokenizer.PushBack(let);
+                let = new Token(TokenType.Keyword, "let", let.LineNumber, let.ColNumber);
+            }
+
             Token varName = tokenizer.Read(TokenType.Identifier);
             Token eqOrBrace = tokenizer.Read();
             tokenizer.PushBack(eqOrBrace);
@@ -229,7 +267,8 @@ namespace JackCompiling
             Token? endOrElse = tokenizer.TryReadNext();
             tokenizer.PushBack(endOrElse);
             ElseClause elseClause = null;
-            if (endOrElse != null && endOrElse.Value == "else") {
+            if (endOrElse != null && endOrElse.Value == "else")
+            {
                 elseClause = ReadElseClause();
             }
             return new IfStatementSyntax(
@@ -275,7 +314,13 @@ namespace JackCompiling
 
         private DoStatementSyntax ReadDoStatement()
         {
-            Token doToken = tokenizer.Read("do");
+            Token doToken = tokenizer.Read();
+            if (doToken.Value != "do")
+            {
+                tokenizer.PushBack(doToken);
+                doToken = new Token(TokenType.Keyword, "do", doToken.LineNumber, doToken.ColNumber);
+            }
+
             SubroutineCall subroutineCall = ReadSubroutineCall();
             Token semicolon = tokenizer.Read(";");
 
@@ -372,8 +417,8 @@ namespace JackCompiling
             while (true)
             {
                 Token op = tokenizer.TryReadNext();
-								if (op == null)
-									break;
+                if (op == null)
+                    break;
 
                 if (!opSet.Contains(op.Value))
                 {
