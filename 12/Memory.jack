@@ -11,14 +11,16 @@
 class Memory {
 	static Array ram;
 	static Array freeList;
+	static Array heap;
 
 	/** Initializes the class. */
 	function void init() {
 		let ram = 0;
 
+		let heap = 2048;
 		let freeList = 2048;
-		let freeList[0] = 2048;
-		let freeList[1] = 14335;
+		let freeList[0] = -1;
+		let freeList[1] = 14334;
 
 		return;
 	}
@@ -37,27 +39,59 @@ class Memory {
 	/** Finds an available RAM block of the given size and returns
 	 *  a reference to its base address. */
 	function int alloc(int size) {
-		var Array currBlock, curr;
-		let currBlock = -1;
+		var Array curr, newBlock, prev;
+		var int nextAddr, len;
 
-		let curr = freeList[0];
-		while (currBlock = -1) {
-			if (curr[1] > size + 2) {
-				currBlock = curr;
+		if (size < 0) { do Sys.error(3); }
+
+		let curr = freeList;
+		let prev = -1;
+		while (~(curr = -1)) { // no block next
+			let nextAddr = curr[0];
+			let len = curr[1];
+
+			if (~(len < (size + 2))) { // len >= size + 2
+				let newBlock = curr + size + 2;
+				let newBlock[0] = curr[0];
+				let newBlock[1] = curr[1] - size - 2;
+				let curr[0] = -1;
+				let curr[1] = size;
+
+				if (prev = -1) {
+					let freeList = newBlock;
+				} else {
+					let prev[0] = newBlock;
+				}
+				return curr + 2;
 			}
-			
-			if (curr = 2048) {
-				do Sys.error(100);
+			if (len = size) { // len = size, no new block
+				let curr[0] = -1;
+
+				if (prev = -1) {
+					let freeList = nextAddr;
+				} else {
+					let prev[0] = nextAddr;
+				}
+				return curr + 2;
 			}
 
-			curr = freeList[curr];
+			let prev = curr;
+			let curr = nextAddr;
 		}
-		return currBlock;
+		do Sys.error(2);
+		return 0;
 	}
 
 	/** De-allocates the given object (cast as an array) by making
 	 *  it available for future allocations. */
-	function void deAlloc(Array o) {
+	function void deAlloc(Array object) {
+		var Array block;
+		let block = object - 2;
+
+		let block[0] = freeList;
+		let freeList = block;
+
 		return;
 	}    
 }
+

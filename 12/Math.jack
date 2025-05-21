@@ -8,89 +8,167 @@
  * Note: Jack compilers implement multiplication and division using OS method calls.
  */
 class Math {
+	static int powerOfTwo;
 
-		/** Initializes the library. */
-		function void init() {
-				return;
+	/** Initializes the library. */
+	function void init() {
+		var int i, n;
+		let powerOfTwo = Array.new(16);
+
+		let i = 0;
+		let n = 1;
+		while (i < 16) {
+			let powerOfTwo[i] = n;
+			let n = n + n;
+			let i = i + 1;
 		}
 
-		/** Returns the absolute value of x. */
-		function int abs(int x) {
-				if (x > 0) {						
-						return x;
-				}
-				else {
-						return -x;
-				}
+		return;
+	}
+
+	/** Returns the absolute value of x. */
+	function int abs(int x) {
+		if (x - powerOfTwo[15] = 0) { do Sys.error(1); }
+
+		if (x > 0) {						
+			return x;
+		}
+		else {
+			return -x;
+		}
+	}
+
+	/** Returns the product of x and y. 
+	 *  When a Jack compiler detects the multiplication operator '*' in the 
+	 *  program's code, it handles it by invoking this method. In other words,
+	 *  the Jack expressions x*y and multiply(x,y) return the same value.
+	 */
+	function int multiply(int x, int y) {
+		var int sum, shiftedX, i;
+		let sum = 0;
+		let shiftedX = x;
+
+		let i = 0;
+		while (i < 16) {
+			if (Math.bit(y, i)) {
+				let sum = sum + shiftedX;
+			}
+			let shiftedX = shiftedX + shiftedX;
+			let i = i + 1;
 		}
 
-		/** Returns the product of x and y. 
-		 *  When a Jack compiler detects the multiplication operator '*' in the 
-		 *  program's code, it handles it by invoking this method. In other words,
-		 *  the Jack expressions x*y and multiply(x,y) return the same value.
-		 */
-		function int multiply(int x, int y) {
-				var int sum, shiftedX, i;
-				let sum = 0;
-				let shiftedX = x;
+		return sum;
+	}
 
-				let i = 0;
-				while (i < 16) {
-						let i = i + 1;
-				}
+	function boolean bit(int x, int n) {
+		var int mask;
+		let mask = powerOfTwo[n];
+		return ~((x & mask) = 0);
+	}
 
-				return 0;
+	function int power(int x, int y) {
+		var int result, i;
+
+		let result = 1;
+		let i = 0;
+		while (i < y) {
+			let result = result * x;
+			let i = i + 1;
+		}
+		return result;
+	}
+
+	/** Returns the integer part of x/y.
+	 *  When a Jack compiler detects the multiplication operator '/' in the 
+	 *  program's code, it handles it by invoking this method. In other words,
+	 *  the Jack expressions x/y and divide(x,y) return the same value.
+	 */
+	function int divide(int x, int y) {
+		var int negX, negY;
+		var int tempX, tempY;
+		var int i, result;
+
+		if (y = 0) { do Sys.error(0); }
+
+		let negX = x < 0;
+		let negY = y < 0;
+		let tempX = Math.abs(x);
+		let tempY = Math.abs(y);
+		let y = tempY;
+		let x = tempX;
+		if( tempY > tempX ) {
+			return 0;
 		}
 
-		function boolean bit(int x, int n) {
-				var int mask;
-				let mask = Math.power(2, n);
-				return ((x & mask) > 0);
+		let i = -1;
+		while (~(tempY < 0)) {
+			let tempY = tempY + tempY;
+			let i = i + 1;
 		}
 
-		function int power(int x, int y) {
-				var int result, i;
-
-				let result = 1;
-				let i = 0;
-				while (i < y) {
-						let result = result * x;
-						let i = i + 1;
-				}
-				return result;
+		let result = 0;
+		while (~(i < 0)) {
+			let tempY = Math.bitShiftLeft(y, i);
+			if (~(tempX - tempY < 0)) {			
+				let tempX = tempX - tempY;
+				let result = result + powerOfTwo[i];
+			}
+			let i = i - 1;
 		}
 
-		/** Returns the integer part of x/y.
-		 *  When a Jack compiler detects the multiplication operator '/' in the 
-		 *  program's code, it handles it by invoking this method. In other words,
-		 *  the Jack expressions x/y and divide(x,y) return the same value.
-		 */
-		function int divide(int x, int y) {
-				return 0;
+		if( negX = negY ) {
+			return result;
 		}
+		return -result;
+	}
 
-		/** Returns the integer part of the square root of x. */
-		function int sqrt(int x) {
-				return 0;
+	function int bitShiftLeft(int x, int n) {
+		var int i;
+		let i = 0;
+		while (i < n) {
+			let x = x + x;
+			let i = i + 1;
 		}
+		return x;
+	}
 
-		/** Returns the greater number. */
-		function int max(int a, int b) {
-				if (a > b) {
-						return a;
-				}
-				else {
-						return b;
-				}
-		}
+	/** Returns the integer part of the square root of x. */
+	function int sqrt(int x) {
+		var int i, y, approx, approx_squared;
 
-		/** Returns the smaller number. */
-		function int min(int a, int b) {
-				if (a > b) {
-						return b;
-				}
-				else {
-						return a;
-				}
+		if (x < 0) { do Sys.error(1); }
+
+		let y = 0;
+		let i = 7;      
+		while( ~(i < 0) ) { // i >= 0
+			let approx = y + powerOfTwo[i];
+			let approx_squared = approx * approx;
+			if( ~(approx_squared > x) & (approx_squared > 0) ) { // 0 < approx_squared <= x
+				let y = approx;
+			}
+			let i = i - 1;
 		}
+		return y;
+	}
+
+	/** Returns the greater number. */
+	function int max(int a, int b) {
+		if (a > b) {
+			return a;
+		}
+		else {
+			return b;
+		}
+	}
+
+	/** Returns the smaller number. */
+	function int min(int a, int b) {
+		if (a > b) {
+			return b;
+		}
+		else {
+			return a;
+		}
+	}
 }
+

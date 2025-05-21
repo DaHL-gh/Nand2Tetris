@@ -11,54 +11,153 @@
  * string-oriented operations.
  */
 class String {
+	field Array string;
+	field int len, maxLen;
 
-    /** constructs a new empty string with a maximum length of maxLength
-     *  and initial length of 0. */
-    constructor String new(int maxLength) {
-    }
+	/** constructs a new empty string with a maximum length of maxLength
+	 *  and initial length of 0. */
+	constructor String new(int maxLength) {
+		let len = 0;
+		let maxLen = maxLength;
+		if (maxLength > 0) {
+			let string = Array.new(maxLength);
+		}
+		
+		if (maxLength < 0) { do Sys.error(14); }
 
-    /** Disposes this string. */
-    method void dispose() {
-    }
+		return this;
+	}
 
-    /** Returns the current length of this string. */
-    method int length() {
-    }
+	/** Disposes this string. */
+	method void dispose() {
+		do string.dispose();
+		return;
+	}
 
-    /** Returns the character at the j-th location of this string. */
-    method char charAt(int j) {
-    }
+	/** Returns the current length of this string. */
+	method int length() {
+		return len;
+	}
 
-    /** Sets the character at the j-th location of this string to c. */
-    method void setCharAt(int j, char c) {
-    }
+	/** Returns the character at the j-th location of this string. */
+	method char charAt(int j) {
+		if (~(0 > j) & (j < len)) {
+			return string[j];
+		} 
+		do Sys.error(15);
+		return 0;
+	}
 
-    /** Appends c to this string's end and returns this string. */
-    method String appendChar(char c) {
-    }
+	/** Sets the character at the j-th location of this string to c. */
+	method void setCharAt(int j, char c) {
+		if (~(0 > j) & (j < len)) {
+			let string[j] = c;
+			return;
+		} 
+		do Sys.error(16);
+		return;
+	}
 
-    /** Erases the last character from this string. */
-    method void eraseLastChar() {
-    }
+	/** Appends c to this string's end and returns this string. */
+	method String appendChar(char c) {
+		if (len = maxLen) { do Sys.error(17); }
 
-    /** Returns the integer value of this string, 
-     *  until a non-digit character is detected. */
-    method int intValue() {
-    }
+		let string[len] = c;
+		let len = len + 1;
 
-    /** Sets this string to hold a representation of the given value. */
-    method void setInt(int val) {
-    }
+		return this;
+	}
 
-    /** Returns the new line character. */
-    function char newLine() {
-    }
+	/** Erases the last character from this string. */
+	method void eraseLastChar() {
+		if (len = 0) { do Sys.error(18); }
 
-    /** Returns the backspace character. */
-    function char backSpace() {
-    }
+		let len = len - 1;
+		return;
+	}
 
-    /** Returns the double quote (") character. */
-    function char doubleQuote() {
-    }
+	/** Returns the integer value of this string, 
+	 *  until a non-digit character is detected. */
+	method int intValue() {
+		var int value,index;
+
+		let value = 0;
+		let index = 0;
+
+		if(string[index]=45){
+			let index = 1;
+		}else{
+			let index = 0;
+		}
+
+		// The index is lower than length. And the current char is digit
+		while (~(string[index] < 48) & ~(string[index] > 57)) {
+			let value = (value * 10) + (string[index] - 48);
+			let index = index + 1;
+		}
+
+		if (string[0] = 45) {
+			return -value;
+		} else {
+			return value;
+		}
+	}
+
+	/** Sets this string to hold a representation of the given value. */
+	method void setInt(int val) {
+		let len = 0;
+
+		if (val = ~32767) {
+			do appendChar(45);
+			do appendChar(51);
+			do appendChar(50);
+			do appendChar(55);
+			do appendChar(54);
+			do appendChar(56);
+			return;
+		}
+
+		if (val < 0) {
+			let val = -val;
+			do appendChar(45);
+		}
+
+		do foo(val);
+
+		return;
+	}
+
+	method void foo(int val) {
+		var int temp, valDivTen;
+
+		if (val > 9) {
+			let valDivTen = val / 10;
+			let temp = (val - (valDivTen * 10)) + 48;
+			let val = valDivTen;
+
+			do foo(val);
+		} else {
+			let temp = val + 48;
+		}
+
+		do appendChar(temp);
+
+		return;
+	}
+
+	/** Returns the new line character. */
+	function char newLine() {
+		return 128;
+	}
+
+	/** Returns the backspace character. */
+	function char backSpace() {
+		return 129;
+	}
+
+	/** Returns the double quote (") character. */
+	function char doubleQuote() {
+		return 34;
+	}
 }
+
